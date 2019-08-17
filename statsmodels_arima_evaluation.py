@@ -4,6 +4,7 @@ Created on Fri Feb 12 19:17:33 2018
 @author: noteven2degrees
 """
 
+from pandas.plotting import register_matplotlib_converters
 import pandas as pd
 import matplotlib.pylab as plt
 from matplotlib.pylab import rcParams
@@ -16,8 +17,8 @@ rcParams['figure.figsize'] = 12, 6
 
 # read data
 dateparse = lambda dates: pd.datetime.strptime(dates, '%Y-%m')
-data = pd.read_csv('./data/AirPassengers.csv', parse_dates='Month', index_col='Month',date_parser=dateparse)
-print data.head()
+data = pd.read_csv('./data/AirPassengers.csv', parse_dates=['Month'], index_col='Month',date_parser=dateparse)
+print(data.head())
 ts = data['Passengers']
 
 # decompose time series (optional)
@@ -30,6 +31,7 @@ residual.dropna(inplace=True)
 # create training and test set
 size = int(len(residual) * 0.8)
 train, test = residual[0:size], residual[size:len(residual)]
+register_matplotlib_converters()
 plt.plot(train.index, train, color='blue', label='Training set')
 plt.plot(test.index, test, color='green', label='Testing set')
 plt.legend()
@@ -51,6 +53,7 @@ def compare_ARIMA_modes_testing(order):
         predictions_f.append(yhat_f)
         predictions_p.append(yhat_p)
         history.append(test[t])
+    #mean_squared_error即为“误差”的平方的期望值
     error_f = mean_squared_error(test, predictions_f)
     error_p = mean_squared_error(test, predictions_p)
     print('MSE forecast:\t\t\t{:1.4f}'.format(error_f))
